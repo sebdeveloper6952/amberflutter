@@ -1,8 +1,8 @@
 name: amberflutter
 description: "Flutter wrapper for Amber (Nostr Signer)"
 version: 0.0.1
-repository: https://github.com/sebdeveloper6952/amberflutter
-issue_tracker: https://github.com/sebdeveloper6952/amberflutter/issues
+repository: https://github.com/sebdeveloper6952/amberflutter/
+issue_tracker: https://github.com/sebdeveloper6952/amberflutter/issues/
 
 environment:
   sdk: ">=3.2.1 <4.0.0"
