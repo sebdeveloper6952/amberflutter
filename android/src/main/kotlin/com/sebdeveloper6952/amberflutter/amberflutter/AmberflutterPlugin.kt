@@ -18,7 +18,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
 
-
 /** AmberflutterPlugin */
 class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
   /// The MethodChannel that will the communication between Flutter and native Android
@@ -35,8 +34,6 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
   private val _intentRequestCodeNip04Decrypt = 3
   private val _intentRequestCodeNip44Encrypt = 4
   private val _intentRequestCodeNip44Decrypt = 5
-
-
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     _channel = MethodChannel(flutterPluginBinding.binaryMessenger, "amberflutter")
