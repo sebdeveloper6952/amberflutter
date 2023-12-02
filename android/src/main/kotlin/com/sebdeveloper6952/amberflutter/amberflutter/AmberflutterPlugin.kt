@@ -1,6 +1,7 @@
 package com.sebdeveloper6952.amberflutter.amberflutter
 
-import com.sebdeveloper6952.amberflutter.amberflutter.models.Permission
+import com.sebdeveloper6952.amberflutter.amberflutter.models.*
+import com.sebdeveloper6952.amberflutter.amberflutter.nostr.*
 
 import android.app.Activity
 import android.content.Intent
@@ -32,9 +33,10 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
   private val _nostrSignerUri = "nostrsigner:"
   private val _intentRequestCodeGetPublicKey = 0
   private val _intentRequestCodeSignEvent = 1
-  private val _methodGetPubkey = "get_public_key"
-  private val _methodSignEvent = "sign_event"
-  private val _resultFieldSignature = "signature"
+  private val _intentRequestCodeNip04Encrypt = 2
+  private val _intentRequestCodeNip04Decrypt = 3
+  private val _intentRequestCodeNip44Encrypt = 4
+  private val _intentRequestCodeNip44Decrypt = 5
 
 
 
@@ -47,12 +49,43 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
     _result = result
 
     when (call.method) {
-      _methodGetPubkey -> _onMethodCallGetPublicKey()
-      _methodSignEvent -> {
+      methodGetPubkey -> {
+        val intent = CreateGetPubkeyIntent()
+        _activity?.startActivityForResult(intent, _intentRequestCodeGetPublicKey)
+      }
+      methodSignEvent -> {
         val npub = call.argument<String>("npub")
         val eventJson = call.argument<String>("event")
-
-        _onMethodCallSignEvent(npub, eventJson)
+        val intent = CreateSignEventIntent(npub, eventJson)
+        _activity?.startActivityForResult(intent, _intentRequestCodeSignEvent)
+      }
+      methodNip04Encrypt -> {
+        val npub = call.argument<String>("npub")
+        val plaintext = call.argument<String>("plaintext")
+        val destPubkey = call.argument<String>("dest_pubkey")
+        val intent = CreateNip04EncryptIntent(plaintext, npub, destPubkey)
+        _activity?.startActivityForResult(intent, _intentRequestCodeNip04Encrypt)
+      }
+      methodNip04Decrypt -> {
+        val npub = call.argument<String>("npub")
+        val ciphertext = call.argument<String>("ciphertext")
+        val destPubkey = call.argument<String>("dest_pubkey")
+        val intent = CreateNip04DecryptIntent(ciphertext, npub, destPubkey)
+        _activity?.startActivityForResult(intent, _intentRequestCodeNip04Decrypt)
+      }
+      methodNip44Encrypt -> {
+        val npub = call.argument<String>("npub")
+        val plaintext = call.argument<String>("plaintext")
+        val destPubkey = call.argument<String>("dest_pubkey")
+        val intent = CreateNip44EncryptIntent(plaintext, npub, destPubkey)
+        _activity?.startActivityForResult(intent, _intentRequestCodeNip44Encrypt)
+      }
+      methodNip44Decrypt -> {
+        val npub = call.argument<String>("npub")
+        val ciphertext = call.argument<String>("ciphertext")
+        val destPubkey = call.argument<String>("dest_pubkey")
+        val intent = CreateNip44DecryptIntent(ciphertext, npub, destPubkey)
+        _activity?.startActivityForResult(intent, _intentRequestCodeNip44Decrypt)
       }
       else -> {
         result.notImplemented()
@@ -68,10 +101,32 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
     }
 
     when (requestCode) {
-      _intentRequestCodeGetPublicKey -> intent?.let { _onGetPublicKeyResult(it) }
-      _intentRequestCodeSignEvent -> intent?.let { _onSignEventResult(it) }
+      _intentRequestCodeGetPublicKey -> intent?.let {
+        val amberResult = GetPubkeyResultFromIntent(it)
+        _result.success(amberResult.signature)
+      }
+      _intentRequestCodeSignEvent -> intent?.let {
+        val amberResult = SignEventResultFromIntent(it)
+        _result.success(amberResult.event)
+      }
+      _intentRequestCodeNip04Encrypt -> intent?.let {
+        val amberResult = Nip04EncryptResultFromIntent(it)
+        _result.success(amberResult.signature)
+      }
+      _intentRequestCodeNip04Decrypt -> intent?.let {
+        val amberResult = Nip04DecryptResultFromIntent(it)
+        _result.success(amberResult.signature)
+      }
+      _intentRequestCodeNip44Encrypt -> intent?.let {
+        val amberResult = Nip44EncryptResultFromIntent(it)
+        _result.success(amberResult.signature)
+      }
+      _intentRequestCodeNip44Decrypt -> intent?.let {
+        val amberResult = Nip44DecryptResultFromIntent(it)
+        _result.success(amberResult.signature)
+      }
       else -> {
-        _result.error("","","")
+        _result.error("error","","")
         return false
       }
     }
@@ -99,59 +154,5 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
 
   override fun onDetachedFromActivityForConfigChanges() {
     _activity = null
-  }
-
-  fun _onMethodCallGetPublicKey() {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(_nostrSignerUri))
-    intent.setPackage(_signerPkgName)
-    val permissions = listOf(
-      Permission(
-        "sign_event",
-        22242
-      ),
-      Permission(
-        "nip04_encrypt"
-      ),
-      Permission(
-        "nip04_decrypt"
-      ),
-      Permission(
-        "nip44_encrypt"
-      ),
-      Permission(
-        "nip44_decrypt"
-      ),
-      Permission(
-        "decrypt_zap_event"
-      ),
-    )
-
-    intent.putExtra("type", _methodGetPubkey)
-    intent.putExtra("permissions", Gson().toJson(permissions))
-
-    _activity?.startActivityForResult(intent, _intentRequestCodeGetPublicKey)
-  }
-
-  fun _onMethodCallSignEvent(currentUserNpub: String?, eventJson: String?) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$_nostrSignerUri$eventJson"))
-    intent.setPackage(_signerPkgName)
-
-    intent.putExtra("type", _methodSignEvent)
-    intent.putExtra("current_user", currentUserNpub)
-
-    _activity?.startActivityForResult(intent, _intentRequestCodeSignEvent)
-  }
-
-  fun _onGetPublicKeyResult(intent: Intent) {
-    val npub = intent.getStringExtra(_resultFieldSignature)
-    _result.success(npub)
-  }
-
-  fun _onSignEventResult(intent: Intent) {
-    val signature = intent.getStringExtra("signature")
-    val id = intent.getStringExtra("id")
-    val signedEventJson = intent.getStringExtra("event")
-
-    _result.success(signedEventJson)
   }
 }

@@ -30,4 +30,24 @@ abstract class AmberflutterPlatform extends PlatformInterface {
   Future<String?> signEvent(String npub, String event) {
     throw UnimplementedError('signEvent() has not been implemented.');
   }
+
+  Future<String?> nip04Encrypt(
+      String plaintext, String npub, String destPubkey) {
+    throw UnimplementedError('nip04Encrypt() has not been implemented.');
+  }
+
+  Future<String?> nip04Decrypt(
+      String ciphertext, String npub, String destPubkey) {
+    throw UnimplementedError('nip04Decrypt() has not been implemented.');
+  }
+
+  Future<String?> nip44Encrypt(
+      String plaintext, String npub, String destPubkey) {
+    throw UnimplementedError('nip44Encrypt() has not been implemented.');
+  }
+
+  Future<String?> nip44Decrypt(
+      String ciphertext, String npub, String destPubkey) {
+    throw UnimplementedError('nip44Decrypt() has not been implemented.');
+  }
 }

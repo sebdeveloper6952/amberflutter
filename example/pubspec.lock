@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   async:
     dependency: transitive
     description:
@@ -241,6 +241,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  nostr:
+    dependency: "direct main"
+    description:
+      name: nostr
+      sha256: "7f6083d67098a3d6ee888002c4371c3c4583d125f17087f07c769e6cb2c4a63a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   path:
     dependency: transitive
     description:

@@ -29,6 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   dart_nostr: ^5.0.1
+  nostr: ^1.4.0
 
 dev_dependencies:
   integration_test:
