@@ -29,8 +29,6 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
   private var _activity: Activity? = null
   private lateinit var _result: MethodChannel.Result
 
-  private val _signerPkgName = "com.greenart7c3.nostrsigner"
-  private val _nostrSignerUri = "nostrsigner:"
   private val _intentRequestCodeGetPublicKey = 0
   private val _intentRequestCodeSignEvent = 1
   private val _intentRequestCodeNip04Encrypt = 2
