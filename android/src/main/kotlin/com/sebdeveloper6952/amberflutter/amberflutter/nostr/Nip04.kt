@@ -8,6 +8,7 @@ fun CreateNip04EncryptIntent(
     plaintext: String?,
     currentUserNpub: String?,
     destPubkey: String?,
+    id: String?,
 ): Intent {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$nostrsignerUri$plaintext"))
     intent.setPackage(amberPackageName)
@@ -15,6 +16,7 @@ fun CreateNip04EncryptIntent(
     intent.putExtra(intentExtraKeyType, methodNip04Encrypt)
     intent.putExtra(intentExtraKeyCurrentUser, currentUserNpub)
     intent.putExtra(intentExtraKeyPubKey, destPubkey)
+    intent.putExtra(intentExtraKeyId, id)
 
     return intent
 }
@@ -34,6 +36,7 @@ fun CreateNip04DecryptIntent(
     ciphertext: String?,
     currentUserNpub: String?,
     destPubkey: String?,
+    id: String?,
 ): Intent {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$nostrsignerUri$ciphertext"))
     intent.setPackage(amberPackageName)
@@ -41,6 +44,7 @@ fun CreateNip04DecryptIntent(
     intent.putExtra(intentExtraKeyType, methodNip04Decrypt)
     intent.putExtra(intentExtraKeyCurrentUser, currentUserNpub)
     intent.putExtra(intentExtraKeyPubKey, destPubkey)
+    intent.putExtra(intentExtraKeyId, id)
 
     return intent
 }

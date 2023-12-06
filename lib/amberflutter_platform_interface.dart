@@ -30,6 +30,7 @@ abstract class AmberflutterPlatform extends PlatformInterface {
   Future<Map<dynamic, dynamic>> signEvent(
     String npub,
     String event,
+    String? id,
   ) {
     throw UnimplementedError('signEvent() has not been implemented.');
   }
@@ -38,6 +39,7 @@ abstract class AmberflutterPlatform extends PlatformInterface {
     String plaintext,
     String npub,
     String pubkey,
+    String? id,
   ) {
     throw UnimplementedError('nip04Encrypt() has not been implemented.');
   }
@@ -46,6 +48,7 @@ abstract class AmberflutterPlatform extends PlatformInterface {
     String ciphertext,
     String npub,
     String pubkey,
+    String? id,
   ) {
     throw UnimplementedError('nip04Decrypt() has not been implemented.');
   }
@@ -54,6 +57,7 @@ abstract class AmberflutterPlatform extends PlatformInterface {
     String plaintext,
     String npub,
     String pubkey,
+    String? id,
   ) {
     throw UnimplementedError('nip44Encrypt() has not been implemented.');
   }
@@ -62,6 +66,7 @@ abstract class AmberflutterPlatform extends PlatformInterface {
     String ciphertext,
     String npub,
     String pubkey,
+    String? id,
   ) {
     throw UnimplementedError('nip44Decrypt() has not been implemented.');
   }

@@ -1,3 +1,4 @@
-## 0.0.6
+## 0.0.7
 
-- TODO: Describe initial release.
+- Updates readme with link to Amber documentation.
+- Adds support for Amber "id" parameter.

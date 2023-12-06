@@ -16,8 +16,7 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     final arguments = {};
 
     if (permissions != null) {
-      final permissionsJson = jsonEncode(permissions);
-      arguments['permissions'] = permissionsJson;
+      arguments['permissions'] = jsonEncode(permissions);
     }
 
     final pk = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
@@ -32,8 +31,13 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
   Future<Map<dynamic, dynamic>> signEvent(
     String npub,
     String event,
+    String? id,
   ) async {
-    final arguments = {"npub": npub, "event": event};
+    final arguments = {
+      "npub": npub,
+      "event": event,
+      "id": id,
+    };
 
     final signedEvent = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'sign_event',
@@ -48,11 +52,13 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String plaintext,
     String npub,
     String pubkey,
+    String? id,
   ) async {
     final arguments = {
       "plaintext": plaintext,
       "npub": npub,
       "pubKey": pubkey,
+      "id": id,
     };
 
     final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
@@ -68,11 +74,13 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String ciphertext,
     String npub,
     String pubkey,
+    String? id,
   ) async {
     final arguments = {
       "ciphertext": ciphertext,
       "npub": npub,
       "pubKey": pubkey,
+      "id": id,
     };
 
     final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
@@ -87,19 +95,15 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
   Future<Map<dynamic, dynamic>> nip44Encrypt(
     String plaintext,
     String npub,
-    String pubkey, {
-    List<Permission>? permissions,
-  }) async {
+    String pubkey,
+    String? id,
+  ) async {
     final arguments = {
       "plaintext": plaintext,
       "npub": npub,
       "pubKey": pubkey,
+      "id": id,
     };
-
-    if (permissions != null) {
-      final permissionsJson = jsonEncode(permissions);
-      arguments['permissions'] = permissionsJson;
-    }
 
     final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip44_encrypt',
@@ -113,19 +117,15 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
   Future<Map<dynamic, dynamic>> nip44Decrypt(
     String ciphertext,
     String npub,
-    String pubkey, {
-    List<Permission>? permissions,
-  }) async {
+    String pubkey,
+    String? id,
+  ) async {
     final arguments = {
       "ciphertext": ciphertext,
       "npub": npub,
       "pubKey": pubkey,
+      "id": id,
     };
-
-    if (permissions != null) {
-      final permissionsJson = jsonEncode(permissions);
-      arguments['permissions'] = permissionsJson;
-    }
 
     final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip44_decrypt',

@@ -7,7 +7,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.NonNull
-import com.google.gson.Gson
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -46,41 +45,52 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
     when (call.method) {
       methodGetPubkey -> {
         val permissions = call.argument<String>(intentExtraKeyPermissions)
+
         val intent = CreateGetPubkeyIntent(permissions)
         _activity?.startActivityForResult(intent, _intentRequestCodeGetPublicKey)
       }
       methodSignEvent -> {
         val npub = call.argument<String>(intentExtraKeyNpub)
         val eventJson = call.argument<String>(intentExtraKeyEvent)
-        val intent = CreateSignEventIntent(npub, eventJson)
+        val id = call.argument<String>(intentExtraKeyId)
+
+        val intent = CreateSignEventIntent(npub, eventJson, id)
         _activity?.startActivityForResult(intent, _intentRequestCodeSignEvent)
       }
       methodNip04Encrypt -> {
         val npub = call.argument<String>(intentExtraKeyNpub)
         val plaintext = call.argument<String>(intentExtraKeyPlaintext)
         val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val intent = CreateNip04EncryptIntent(plaintext, npub, destPubkey)
+        val id = call.argument<String>(intentExtraKeyId)
+
+        val intent = CreateNip04EncryptIntent(plaintext, npub, destPubkey, id)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip04Encrypt)
       }
       methodNip04Decrypt -> {
         val npub = call.argument<String>(intentExtraKeyNpub)
         val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
         val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val intent = CreateNip04DecryptIntent(ciphertext, npub, destPubkey)
+        val id = call.argument<String>(intentExtraKeyId)
+
+        val intent = CreateNip04DecryptIntent(ciphertext, npub, destPubkey, id)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip04Decrypt)
       }
       methodNip44Encrypt -> {
         val npub = call.argument<String>(intentExtraKeyNpub)
         val plaintext = call.argument<String>(intentExtraKeyPlaintext)
         val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val intent = CreateNip44EncryptIntent(plaintext, npub, destPubkey)
+        val id = call.argument<String>(intentExtraKeyId)
+
+        val intent = CreateNip44EncryptIntent(plaintext, npub, destPubkey, id)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip44Encrypt)
       }
       methodNip44Decrypt -> {
         val npub = call.argument<String>(intentExtraKeyNpub)
         val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
         val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val intent = CreateNip44DecryptIntent(ciphertext, npub, destPubkey)
+        val id = call.argument<String>(intentExtraKeyId)
+
+        val intent = CreateNip44DecryptIntent(ciphertext, npub, destPubkey, id)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip44Decrypt)
       }
       else -> {

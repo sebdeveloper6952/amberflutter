@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:amberflutter/amberflutter.dart';
 import 'package:nostr/nostr.dart';
 import 'dart:convert';
-import 'package:amberflutter/models.dart';
 
 void main() {
   runApp(const MyApp());
