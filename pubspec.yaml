@@ -1,6 +1,6 @@
 name: amberflutter
 description: "Flutter wrapper for Amber (Nostr Signer). Allows Flutter android apps to interact with Amber."
-version: 0.0.5
+version: 0.0.6
 repository: https://github.com/sebdeveloper6952/amberflutter/
 issue_tracker: https://github.com/sebdeveloper6952/amberflutter/issues/
 

@@ -1,35 +1,70 @@
 import 'amberflutter_platform_interface.dart';
+import 'package:amberflutter/models.dart';
 
 class Amberflutter {
-  Future<String?> getPublicKey() {
-    return AmberflutterPlatform.instance.getPublicKey();
+  Future<Map<dynamic, dynamic>> getPublicKey({
+    List<Permission>? permissions,
+  }) {
+    return AmberflutterPlatform.instance.getPublicKey(
+      permissions: permissions,
+    );
   }
 
-  Future<String?> signEvent(String npub, String event) {
-    return AmberflutterPlatform.instance.signEvent(npub, event);
+  Future<Map<dynamic, dynamic>> signEvent({
+    required String npub,
+    required String event,
+  }) {
+    return AmberflutterPlatform.instance.signEvent(
+      npub,
+      event,
+    );
   }
 
-  Future<String?> nip04Encrypt(
-      String plaintext, String npub, String destPubkey) {
-    return AmberflutterPlatform.instance
-        .nip04Encrypt(plaintext, npub, destPubkey);
+  Future<Map<dynamic, dynamic>> nip04Encrypt({
+    required String plaintext,
+    required String npub,
+    required String pubkey,
+  }) {
+    return AmberflutterPlatform.instance.nip04Encrypt(
+      plaintext,
+      npub,
+      pubkey,
+    );
   }
 
-  Future<String?> nip04Decrypt(
-      String ciphertext, String npub, String destPubkey) {
-    return AmberflutterPlatform.instance
-        .nip04Decrypt(ciphertext, npub, destPubkey);
+  Future<Map<dynamic, dynamic>> nip04Decrypt({
+    required String ciphertext,
+    required String npub,
+    required String pubkey,
+  }) {
+    return AmberflutterPlatform.instance.nip04Decrypt(
+      ciphertext,
+      npub,
+      pubkey,
+    );
   }
 
-  Future<String?> nip44Encrypt(
-      String plaintext, String npub, String destPubkey) {
-    return AmberflutterPlatform.instance
-        .nip44Encrypt(plaintext, npub, destPubkey);
+  Future<Map<dynamic, dynamic>> nip44Encrypt({
+    required String plaintext,
+    required String npub,
+    required String pubkey,
+  }) {
+    return AmberflutterPlatform.instance.nip44Encrypt(
+      plaintext,
+      npub,
+      pubkey,
+    );
   }
 
-  Future<String?> nip44Decrypt(
-      String ciphertext, String npub, String destPubkey) {
-    return AmberflutterPlatform.instance
-        .nip44Decrypt(ciphertext, npub, destPubkey);
+  Future<Map<dynamic, dynamic>> nip44Decrypt({
+    required String ciphertext,
+    required String npub,
+    required String pubkey,
+  }) {
+    return AmberflutterPlatform.instance.nip44Decrypt(
+      ciphertext,
+      npub,
+      pubkey,
+    );
   }
 }

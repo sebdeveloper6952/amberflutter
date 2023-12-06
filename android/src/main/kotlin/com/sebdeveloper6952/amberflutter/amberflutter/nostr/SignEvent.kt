@@ -15,14 +15,16 @@ fun CreateSignEventIntent(npub: String?, eventJson: String?): Intent {
     return intent
 }
 
-fun SignEventResultFromIntent(intent: Intent): Result {
+fun SignEventResultFromIntent(intent: Intent): Map<String, String> {
     val signedEvent = intent.getStringExtra(intentExtraKeyEvent)
     val sig = intent.getStringExtra(intentExtraKeySignature)
     val id = intent.getStringExtra(intentExtraKeyId)
 
-    return Result(
-        signature = sig,
-        id = id,
-        event = signedEvent,
-    )
+    val hashMap : HashMap<String, String> = HashMap()
+
+    hashMap[intentExtraKeyEvent] = signedEvent ?: ""
+    hashMap[intentExtraKeySignature] = sig ?: ""
+    hashMap[intentExtraKeyId] = id ?: ""
+
+    return hashMap
 }

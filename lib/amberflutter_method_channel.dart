@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
+import 'package:amberflutter/models.dart';
 import 'amberflutter_platform_interface.dart';
+import 'dart:convert';
 
 /// An implementation of [AmberflutterPlatform] that uses method channels.
 class MethodChannelAmberflutter extends AmberflutterPlatform {
@@ -10,83 +11,127 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
   final methodChannel = const MethodChannel('amberflutter');
 
   @override
-  Future<String?> getPublicKey() async {
-    final pk = await methodChannel.invokeMethod<String>('get_public_key');
-    return pk;
+  Future<Map<dynamic, dynamic>> getPublicKey(
+      {List<Permission>? permissions}) async {
+    final arguments = {};
+
+    if (permissions != null) {
+      final permissionsJson = jsonEncode(permissions);
+      arguments['permissions'] = permissionsJson;
+    }
+
+    final pk = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'get_public_key',
+      arguments,
+    );
+
+    return pk ?? {};
   }
 
   @override
-  Future<String?> signEvent(String npub, String event) async {
+  Future<Map<dynamic, dynamic>> signEvent(
+    String npub,
+    String event,
+  ) async {
     final arguments = {"npub": npub, "event": event};
-    final signedEvent = await methodChannel.invokeMethod<String>(
+
+    final signedEvent = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'sign_event',
       arguments,
     );
 
-    return signedEvent;
+    return signedEvent ?? {};
   }
 
   @override
-  Future<String?> nip04Encrypt(
-      String plaintext, String npub, String destPubkey) {
+  Future<Map<dynamic, dynamic>> nip04Encrypt(
+    String plaintext,
+    String npub,
+    String pubkey,
+  ) async {
     final arguments = {
       "plaintext": plaintext,
       "npub": npub,
-      "dest_pubkey": destPubkey,
+      "pubKey": pubkey,
     };
-    final ciphertext = methodChannel.invokeMethod<String>(
+
+    final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip04_encrypt',
       arguments,
     );
 
-    return ciphertext;
+    return ciphertext ?? {};
   }
 
   @override
-  Future<String?> nip04Decrypt(
-      String ciphertext, String npub, String destPubkey) {
+  Future<Map<dynamic, dynamic>> nip04Decrypt(
+    String ciphertext,
+    String npub,
+    String pubkey,
+  ) async {
     final arguments = {
       "ciphertext": ciphertext,
       "npub": npub,
-      "dest_pubkey": destPubkey,
+      "pubKey": pubkey,
     };
-    final plaintext = methodChannel.invokeMethod<String>(
+
+    final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip04_decrypt',
       arguments,
     );
 
-    return plaintext;
+    return plaintext ?? {};
   }
 
   @override
-  Future<String?> nip44Encrypt(
-      String plaintext, String npub, String destPubkey) {
+  Future<Map<dynamic, dynamic>> nip44Encrypt(
+    String plaintext,
+    String npub,
+    String pubkey, {
+    List<Permission>? permissions,
+  }) async {
     final arguments = {
       "plaintext": plaintext,
       "npub": npub,
-      "dest_pubkey": destPubkey,
+      "pubKey": pubkey,
     };
-    final ciphertext = methodChannel.invokeMethod<String>(
+
+    if (permissions != null) {
+      final permissionsJson = jsonEncode(permissions);
+      arguments['permissions'] = permissionsJson;
+    }
+
+    final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip44_encrypt',
       arguments,
     );
 
-    return ciphertext;
+    return ciphertext ?? {};
   }
 
   @override
-  Future<String?> nip44Decrypt(
-      String ciphertext, String npub, String destPubkey) {
+  Future<Map<dynamic, dynamic>> nip44Decrypt(
+    String ciphertext,
+    String npub,
+    String pubkey, {
+    List<Permission>? permissions,
+  }) async {
     final arguments = {
       "ciphertext": ciphertext,
       "npub": npub,
-      "dest_pubkey": destPubkey,
+      "pubKey": pubkey,
     };
-    final plaintext = methodChannel.invokeMethod<String>(
+
+    if (permissions != null) {
+      final permissionsJson = jsonEncode(permissions);
+      arguments['permissions'] = permissionsJson;
+    }
+
+    final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
       'nip44_decrypt',
       arguments,
     );
 
-    return plaintext;
+    return plaintext ?? {};
   }
 }

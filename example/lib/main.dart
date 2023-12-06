@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:amberflutter/amberflutter.dart';
 import 'package:nostr/nostr.dart';
 import 'dart:convert';
+import 'package:amberflutter/models.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AmberFlutter Example'),
+        title: const Text(
+          'AmberFlutter Example',
+        ),
       ),
       body: Center(
         child: Column(
@@ -48,11 +51,20 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             FilledButton(
               onPressed: () {
-                amber.getPublicKey().then((value) {
-                  _npub = value ?? '';
+                amber.getPublicKey(
+                  permissions: [
+                    const Permission(
+                      type: "nip04_encrypt",
+                    ),
+                    const Permission(
+                      type: "nip04_decrypt",
+                    ),
+                  ],
+                ).then((value) {
+                  _npub = value['signature'] ?? '';
                   _pubkeyHex = Nip19.decodePubkey(_npub);
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },
@@ -66,9 +78,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
                 });
 
-                amber.signEvent(_npub, eventJson).then((value) {
+                amber
+                    .signEvent(
+                  npub: _npub,
+                  event: eventJson,
+                )
+                    .then((value) {
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },
@@ -78,14 +95,14 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 amber
                     .nip04Encrypt(
-                  "Hello from Amber Flutter, Nip 04!",
-                  _npub,
-                  _pubkeyHex,
+                  plaintext: "Hello from Amber Flutter, Nip 04!",
+                  npub: _npub,
+                  pubkey: _pubkeyHex,
                 )
                     .then((value) {
-                  _cipherText = value ?? '';
+                  _cipherText = value['signature'] ?? '';
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },
@@ -95,13 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 amber
                     .nip04Decrypt(
-                  _cipherText,
-                  _npub,
-                  _pubkeyHex,
+                  ciphertext: _cipherText,
+                  npub: _npub,
+                  pubkey: _pubkeyHex,
                 )
                     .then((value) {
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },
@@ -111,14 +128,14 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 amber
                     .nip44Encrypt(
-                  "Hello from Amber Flutter, Nip 44!",
-                  _npub,
-                  _pubkeyHex,
+                  plaintext: "Hello from Amber Flutter, Nip 44!",
+                  npub: _npub,
+                  pubkey: _pubkeyHex,
                 )
                     .then((value) {
-                  _cipherText = value ?? '';
+                  _cipherText = value['signature'] ?? '';
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },
@@ -128,13 +145,13 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 amber
                     .nip44Decrypt(
-                  _cipherText,
-                  _npub,
-                  _pubkeyHex,
+                  ciphertext: _cipherText,
+                  npub: _npub,
+                  pubkey: _pubkeyHex,
                 )
                     .then((value) {
                   setState(() {
-                    _text = value ?? '';
+                    _text = '$value';
                   });
                 });
               },

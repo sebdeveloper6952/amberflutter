@@ -45,40 +45,41 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
 
     when (call.method) {
       methodGetPubkey -> {
-        val intent = CreateGetPubkeyIntent()
+        val permissions = call.argument<String>(intentExtraKeyPermissions)
+        val intent = CreateGetPubkeyIntent(permissions)
         _activity?.startActivityForResult(intent, _intentRequestCodeGetPublicKey)
       }
       methodSignEvent -> {
-        val npub = call.argument<String>("npub")
-        val eventJson = call.argument<String>("event")
+        val npub = call.argument<String>(intentExtraKeyNpub)
+        val eventJson = call.argument<String>(intentExtraKeyEvent)
         val intent = CreateSignEventIntent(npub, eventJson)
         _activity?.startActivityForResult(intent, _intentRequestCodeSignEvent)
       }
       methodNip04Encrypt -> {
-        val npub = call.argument<String>("npub")
-        val plaintext = call.argument<String>("plaintext")
-        val destPubkey = call.argument<String>("dest_pubkey")
+        val npub = call.argument<String>(intentExtraKeyNpub)
+        val plaintext = call.argument<String>(intentExtraKeyPlaintext)
+        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
         val intent = CreateNip04EncryptIntent(plaintext, npub, destPubkey)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip04Encrypt)
       }
       methodNip04Decrypt -> {
-        val npub = call.argument<String>("npub")
-        val ciphertext = call.argument<String>("ciphertext")
-        val destPubkey = call.argument<String>("dest_pubkey")
+        val npub = call.argument<String>(intentExtraKeyNpub)
+        val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
+        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
         val intent = CreateNip04DecryptIntent(ciphertext, npub, destPubkey)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip04Decrypt)
       }
       methodNip44Encrypt -> {
-        val npub = call.argument<String>("npub")
-        val plaintext = call.argument<String>("plaintext")
-        val destPubkey = call.argument<String>("dest_pubkey")
+        val npub = call.argument<String>(intentExtraKeyNpub)
+        val plaintext = call.argument<String>(intentExtraKeyPlaintext)
+        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
         val intent = CreateNip44EncryptIntent(plaintext, npub, destPubkey)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip44Encrypt)
       }
       methodNip44Decrypt -> {
-        val npub = call.argument<String>("npub")
-        val ciphertext = call.argument<String>("ciphertext")
-        val destPubkey = call.argument<String>("dest_pubkey")
+        val npub = call.argument<String>(intentExtraKeyNpub)
+        val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
+        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
         val intent = CreateNip44DecryptIntent(ciphertext, npub, destPubkey)
         _activity?.startActivityForResult(intent, _intentRequestCodeNip44Decrypt)
       }
@@ -95,36 +96,34 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       return false
     }
 
+    lateinit var amberResult: Map<String, String>
+
     when (requestCode) {
       _intentRequestCodeGetPublicKey -> intent?.let {
-        val amberResult = GetPubkeyResultFromIntent(it)
-        _result.success(amberResult.signature)
+        amberResult = GetPubkeyResultFromIntent(it)
       }
       _intentRequestCodeSignEvent -> intent?.let {
-        val amberResult = SignEventResultFromIntent(it)
-        _result.success(amberResult.event)
+        amberResult = SignEventResultFromIntent(it)
       }
       _intentRequestCodeNip04Encrypt -> intent?.let {
-        val amberResult = Nip04EncryptResultFromIntent(it)
-        _result.success(amberResult.signature)
+        amberResult = Nip04EncryptResultFromIntent(it)
       }
       _intentRequestCodeNip04Decrypt -> intent?.let {
-        val amberResult = Nip04DecryptResultFromIntent(it)
-        _result.success(amberResult.signature)
+        amberResult = Nip04DecryptResultFromIntent(it)
       }
       _intentRequestCodeNip44Encrypt -> intent?.let {
-        val amberResult = Nip44EncryptResultFromIntent(it)
-        _result.success(amberResult.signature)
+        amberResult = Nip44EncryptResultFromIntent(it)
       }
       _intentRequestCodeNip44Decrypt -> intent?.let {
-        val amberResult = Nip44DecryptResultFromIntent(it)
-        _result.success(amberResult.signature)
+        amberResult = Nip44DecryptResultFromIntent(it)
       }
       else -> {
-        _result.error("error","","")
+        _result.error("error","unknown request code","")
         return false
       }
     }
+
+    _result.success(amberResult)
 
     return true
   }
