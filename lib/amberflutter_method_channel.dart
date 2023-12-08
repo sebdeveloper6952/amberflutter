@@ -13,7 +13,10 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
   @override
   Future<Map<dynamic, dynamic>> getPublicKey(
       {List<Permission>? permissions}) async {
-    final arguments = {"type": "get_public_key"};
+    final arguments = {
+      "type": "get_public_key",
+      "uri_data": "login",
+    };
 
     if (permissions != null) {
       arguments['permissions'] = jsonEncode(permissions);

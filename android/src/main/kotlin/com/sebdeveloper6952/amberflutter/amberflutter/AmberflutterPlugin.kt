@@ -184,7 +184,6 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       }
     } catch (e: Exception) {
       Log.d("onMethodCall", e.message ?: "")
-      throw e
       return null
     }
     return null
