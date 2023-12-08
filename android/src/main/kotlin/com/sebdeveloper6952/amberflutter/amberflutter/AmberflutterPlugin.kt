@@ -1,12 +1,13 @@
 package com.sebdeveloper6952.amberflutter.amberflutter
 
 import com.sebdeveloper6952.amberflutter.amberflutter.models.*
-import com.sebdeveloper6952.amberflutter.amberflutter.nostr.*
 
 import android.app.Activity
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.NonNull
+import android.util.Log
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -16,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
+import java.lang.Exception
 
 /** AmberflutterPlugin */
 class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -24,118 +26,97 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var _channel : MethodChannel
+  private lateinit var _context : Context
   private var _activity: Activity? = null
   private lateinit var _result: MethodChannel.Result
 
-  private val _intentRequestCodeGetPublicKey = 0
-  private val _intentRequestCodeSignEvent = 1
-  private val _intentRequestCodeNip04Encrypt = 2
-  private val _intentRequestCodeNip04Decrypt = 3
-  private val _intentRequestCodeNip44Encrypt = 4
-  private val _intentRequestCodeNip44Decrypt = 5
+  private val _intentRequestCode = 0
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    _channel = MethodChannel(flutterPluginBinding.binaryMessenger, "amberflutter")
+    _channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.sebdeveloper6952.amberflutter")
     _channel.setMethodCallHandler(this)
+    _context = flutterPluginBinding.applicationContext
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
-    _result = result
+    if (call.method == nostrsignerUri) {
+      _result = result
 
-    when (call.method) {
-      methodGetPubkey -> {
-        val permissions = call.argument<String>(intentExtraKeyPermissions)
-
-        val intent = CreateGetPubkeyIntent(permissions)
-        _activity?.startActivityForResult(intent, _intentRequestCodeGetPublicKey)
+      var paramsMap: HashMap<*, *>? = null
+      if (call.arguments != null && call.arguments is HashMap<*, *>) {
+        paramsMap = call.arguments as HashMap<*, *>
       }
-      methodSignEvent -> {
-        val npub = call.argument<String>(intentExtraKeyNpub)
-        val eventJson = call.argument<String>(intentExtraKeyEvent)
-        val id = call.argument<String>(intentExtraKeyId)
 
-        val intent = CreateSignEventIntent(npub, eventJson, id)
-        _activity?.startActivityForResult(intent, _intentRequestCodeSignEvent)
-      }
-      methodNip04Encrypt -> {
-        val npub = call.argument<String>(intentExtraKeyNpub)
-        val plaintext = call.argument<String>(intentExtraKeyPlaintext)
-        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val id = call.argument<String>(intentExtraKeyId)
-
-        val intent = CreateNip04EncryptIntent(plaintext, npub, destPubkey, id)
-        _activity?.startActivityForResult(intent, _intentRequestCodeNip04Encrypt)
-      }
-      methodNip04Decrypt -> {
-        val npub = call.argument<String>(intentExtraKeyNpub)
-        val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
-        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val id = call.argument<String>(intentExtraKeyId)
-
-        val intent = CreateNip04DecryptIntent(ciphertext, npub, destPubkey, id)
-        _activity?.startActivityForResult(intent, _intentRequestCodeNip04Decrypt)
-      }
-      methodNip44Encrypt -> {
-        val npub = call.argument<String>(intentExtraKeyNpub)
-        val plaintext = call.argument<String>(intentExtraKeyPlaintext)
-        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val id = call.argument<String>(intentExtraKeyId)
-
-        val intent = CreateNip44EncryptIntent(plaintext, npub, destPubkey, id)
-        _activity?.startActivityForResult(intent, _intentRequestCodeNip44Encrypt)
-      }
-      methodNip44Decrypt -> {
-        val npub = call.argument<String>(intentExtraKeyNpub)
-        val ciphertext = call.argument<String>(intentExtraKeyCiphertext)
-        val destPubkey = call.argument<String>(intentExtraKeyPubKey)
-        val id = call.argument<String>(intentExtraKeyId)
-
-        val intent = CreateNip44DecryptIntent(ciphertext, npub, destPubkey, id)
-        _activity?.startActivityForResult(intent, _intentRequestCodeNip44Decrypt)
-      }
-      else -> {
-        result.notImplemented()
+      if (paramsMap == null) {
+        Log.d("onMethodCall", "paramsMap is null")
         return
       }
+
+      val requestType = paramsMap[intentExtraKeyType] as? String ?: ""
+      val currentUser = paramsMap[intentExtraKeyCurrentUser] as? String ?: ""
+      val pubKey = paramsMap[intentExtraKeyPubKey] as? String ?: ""
+      val id = paramsMap[intentExtraKeyId] as? String ?: ""
+      val uriData = paramsMap[intentExtraKeyUriData] as? String ?: ""
+      val permissions = paramsMap[intentExtraKeyPermissions] as? String ?: ""
+
+      val data = getDataFromContentResolver(
+        requestType.uppercase(),
+        arrayOf(uriData, pubKey, currentUser),
+        _context.contentResolver,
+      )
+      if (!data.isNullOrEmpty()) {
+        Log.d("onMethodCall", "content resolver got data")
+        _result.success(data)
+        return
+      }
+
+      val intent = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse(
+          "$nostrsignerUri:$uriData"
+        )
+      )
+
+      intent.putExtra(intentExtraKeyType, requestType)
+      intent.putExtra(intentExtraKeyCurrentUser, currentUser)
+      intent.putExtra(intentExtraKeyPubKey, pubKey)
+      intent.putExtra(intentExtraKeyId, id)
+      intent.putExtra(intentExtraKeyPermissions, permissions)
+      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+      _activity?.startActivityForResult(
+        intent,
+        _intentRequestCode
+      )
+    } else {
+      result.notImplemented()
     }
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
-    if (resultCode != Activity.RESULT_OK) {
-      _result.error("error","user rejected request","")
-      return false
-    }
+    if (requestCode == _intentRequestCode) {
+      if (resultCode == Activity.RESULT_OK && intent != null) {
+        val dataMap: HashMap<String, String?> = HashMap()
+        if (intent.hasExtra(intentExtraKeySignature)) {
+          val signature = intent.getStringExtra(intentExtraKeySignature)
+          dataMap[intentExtraKeySignature] = signature
+        }
+        if (intent.hasExtra(intentExtraKeyId)) {
+          val id = intent.getStringExtra(intentExtraKeyId)
+          dataMap[intentExtraKeyId] = id
+        }
+        if (intent.hasExtra(intentExtraKeyEvent)) {
+          val event = intent.getStringExtra(intentExtraKeyEvent)
+          dataMap[intentExtraKeyEvent] = event
+        }
 
-    lateinit var amberResult: Map<String, String>
+        _result.success(dataMap)
 
-    when (requestCode) {
-      _intentRequestCodeGetPublicKey -> intent?.let {
-        amberResult = GetPubkeyResultFromIntent(it)
-      }
-      _intentRequestCodeSignEvent -> intent?.let {
-        amberResult = SignEventResultFromIntent(it)
-      }
-      _intentRequestCodeNip04Encrypt -> intent?.let {
-        amberResult = Nip04EncryptResultFromIntent(it)
-      }
-      _intentRequestCodeNip04Decrypt -> intent?.let {
-        amberResult = Nip04DecryptResultFromIntent(it)
-      }
-      _intentRequestCodeNip44Encrypt -> intent?.let {
-        amberResult = Nip44EncryptResultFromIntent(it)
-      }
-      _intentRequestCodeNip44Decrypt -> intent?.let {
-        amberResult = Nip44DecryptResultFromIntent(it)
-      }
-      else -> {
-        _result.error("error","unknown request code","")
-        return false
+        return true
       }
     }
 
-    _result.success(amberResult)
-
-    return true
+    return false
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -158,5 +139,52 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
 
   override fun onDetachedFromActivityForConfigChanges() {
     _activity = null
+  }
+
+  /*
+    Code taken from: https://github.com/0xchat-app/nostr-dart/blob/main/android/src/main/kotlin/com/oxchat/nostrcore/ChatcorePlugin.kt
+   */
+  private fun getDataFromContentResolver(
+    type: String,
+    uriData: Array<out String>,
+    resolver: ContentResolver,
+  ): HashMap<String, String?>? {
+    try {
+      resolver.query(
+        Uri.parse("content://${amberPackageName}.$type"),
+        uriData,
+        null,
+        null,
+        null
+      ).use {
+        if (it == null) {
+          Log.d("getDataFromResolver", "resolver query is NULL")
+          return null
+        }
+        if (it.moveToFirst()) {
+          val dataMap: HashMap<String, String?> = HashMap()
+          val index = it.getColumnIndex("signature")
+          if (index < 0) {
+            Log.d("getDataFromResolver", "column 'signature' not found")
+          } else {
+            val signature = it.getString(index)
+            dataMap["signature"] = signature
+          }
+          val indexJson = it.getColumnIndex("event")
+          if (indexJson < 0) {
+            Log.d("getDataFromResolver", "column 'event' not found")
+          } else {
+            val eventJson = it.getString(indexJson)
+            dataMap["event"] = eventJson
+          }
+
+          return dataMap
+        }
+      }
+    } catch (e: Exception) {
+      Log.d("contentResolver", e.message ?: "unknown error")
+      return null
+    }
+    return null
   }
 }

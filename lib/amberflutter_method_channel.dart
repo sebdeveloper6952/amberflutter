@@ -8,23 +8,27 @@ import 'dart:convert';
 class MethodChannelAmberflutter extends AmberflutterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('amberflutter');
+  final methodChannel =
+      const MethodChannel('com.sebdeveloper6952.amberflutter');
 
   @override
   Future<Map<dynamic, dynamic>> getPublicKey(
       {List<Permission>? permissions}) async {
-    final arguments = {};
+    final arguments = {
+      "type": "get_public_key",
+      "uri_data": "login",
+    };
 
     if (permissions != null) {
       arguments['permissions'] = jsonEncode(permissions);
     }
 
-    final pk = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'get_public_key',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return pk ?? {};
+    return data ?? {};
   }
 
   @override
@@ -34,17 +38,18 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String? id,
   ) async {
     final arguments = {
-      "npub": npub,
-      "event": event,
+      "type": "sign_event",
+      "current_user": npub,
+      "uri_data": event,
       "id": id,
     };
 
-    final signedEvent = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'sign_event',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return signedEvent ?? {};
+    return data ?? {};
   }
 
   @override
@@ -55,18 +60,19 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String? id,
   ) async {
     final arguments = {
-      "plaintext": plaintext,
-      "npub": npub,
+      "type": "nip04_encrypt",
+      "uri_data": plaintext,
+      "current_user": npub,
       "pubKey": pubkey,
       "id": id,
     };
 
-    final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'nip04_encrypt',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return ciphertext ?? {};
+    return data ?? {};
   }
 
   @override
@@ -77,18 +83,19 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String? id,
   ) async {
     final arguments = {
-      "ciphertext": ciphertext,
-      "npub": npub,
+      "type": "nip04_decrypt",
+      "uri_data": ciphertext,
+      "current_user": npub,
       "pubKey": pubkey,
       "id": id,
     };
 
-    final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'nip04_decrypt',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return plaintext ?? {};
+    return data ?? {};
   }
 
   @override
@@ -99,18 +106,19 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String? id,
   ) async {
     final arguments = {
-      "plaintext": plaintext,
-      "npub": npub,
+      "type": "nip44_encrypt",
+      "uri_data": plaintext,
+      "current_user": npub,
       "pubKey": pubkey,
       "id": id,
     };
 
-    final ciphertext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'nip44_encrypt',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return ciphertext ?? {};
+    return data ?? {};
   }
 
   @override
@@ -121,17 +129,18 @@ class MethodChannelAmberflutter extends AmberflutterPlatform {
     String? id,
   ) async {
     final arguments = {
-      "ciphertext": ciphertext,
-      "npub": npub,
+      "type": "nip44_decrypt",
+      "uri_data": ciphertext,
+      "current_user": npub,
       "pubKey": pubkey,
       "id": id,
     };
 
-    final plaintext = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'nip44_decrypt',
+    final data = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
+      'nostrsigner',
       arguments,
     );
 
-    return plaintext ?? {};
+    return data ?? {};
   }
 }
