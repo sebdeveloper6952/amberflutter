@@ -58,11 +58,10 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       val id = paramsMap[intentExtraKeyId] as? String ?: ""
       val uriData = paramsMap[intentExtraKeyUriData] as? String ?: ""
       val permissions = paramsMap[intentExtraKeyPermissions] as? String ?: ""
-      val arrayData = arrayOf(uriData, pubKey, currentUser)
 
       val data = getDataFromContentResolver(
         requestType.uppercase(),
-        arrayData,
+        arrayOf(uriData, pubKey, currentUser),
         _context.contentResolver,
       )
       if (!data.isNullOrEmpty()) {
@@ -183,7 +182,7 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
         }
       }
     } catch (e: Exception) {
-      Log.d("onMethodCall", e.message ?: "")
+      Log.d("contentResolver", e.message ?: "unknown error")
       return null
     }
     return null

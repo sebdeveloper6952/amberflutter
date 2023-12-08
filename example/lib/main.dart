@@ -74,7 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 final eventJson = jsonEncode({
                   'kind': 1,
                   'content': 'Hello from Amber Flutter!',
-                  'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
+                  'created_at':
+                      (DateTime.now().millisecondsSinceEpoch / 1000).round(),
                 });
 
                 amber
