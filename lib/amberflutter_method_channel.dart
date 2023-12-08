@@ -8,7 +8,8 @@ import 'dart:convert';
 class MethodChannelAmberflutter extends AmberflutterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('amberflutter');
+  final methodChannel =
+      const MethodChannel('com.sebdeveloper6952.amberflutter');
 
   @override
   Future<Map<dynamic, dynamic>> getPublicKey(

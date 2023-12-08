@@ -33,7 +33,7 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
   private val _intentRequestCode = 0
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    _channel = MethodChannel(flutterPluginBinding.binaryMessenger, "amberflutter")
+    _channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.sebdeveloper6952.amberflutter")
     _channel.setMethodCallHandler(this)
     _context = flutterPluginBinding.applicationContext
   }
