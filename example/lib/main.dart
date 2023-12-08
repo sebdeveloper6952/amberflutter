@@ -72,10 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
             FilledButton(
               onPressed: () {
                 final eventJson = jsonEncode({
+                  'id': '',
+                  'pubkey': Nip19.decodePubkey(_npub),
                   'kind': 1,
                   'content': 'Hello from Amber Flutter!',
                   'created_at':
                       (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+                  'tags': [],
+                  'sig': '',
                 });
 
                 amber
