@@ -84,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 amber
                     .signEvent(
-                  npub: _npub,
-                  event: eventJson,
+                  currentUser: _npub,
+                  eventJson: eventJson,
                 )
                     .then((value) {
                   setState(() {
@@ -100,8 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 amber
                     .nip04Encrypt(
                   plaintext: "Hello from Amber Flutter, Nip 04!",
-                  npub: _npub,
-                  pubkey: _pubkeyHex,
+                  currentUser: _npub,
+                  pubKey: _pubkeyHex,
                 )
                     .then((value) {
                   _cipherText = value['signature'] ?? '';
@@ -117,8 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 amber
                     .nip04Decrypt(
                   ciphertext: _cipherText,
-                  npub: _npub,
-                  pubkey: _pubkeyHex,
+                  currentUser: _npub,
+                  pubKey: _pubkeyHex,
                 )
                     .then((value) {
                   setState(() {
@@ -133,8 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 amber
                     .nip44Encrypt(
                   plaintext: "Hello from Amber Flutter, Nip 44!",
-                  npub: _npub,
-                  pubkey: _pubkeyHex,
+                  currentUser: _npub,
+                  pubKey: _pubkeyHex,
                 )
                     .then((value) {
                   _cipherText = value['signature'] ?? '';
@@ -150,8 +150,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 amber
                     .nip44Decrypt(
                   ciphertext: _cipherText,
-                  npub: _npub,
-                  pubkey: _pubkeyHex,
+                  currentUser: _npub,
+                  pubKey: _pubkeyHex,
                 )
                     .then((value) {
                   setState(() {
