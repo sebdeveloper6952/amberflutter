@@ -54,14 +54,19 @@ _Sign Event_
 ```
 final amber = Amberflutter();
 final eventJson = jsonEncode({
+  'id': '',
+  'pubkey': Nip19.decodePubkey(_npub),
   'kind': 1,
   'content': 'Hello from Amber Flutter!',
-  'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
+  'created_at':
+      (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+  'tags': [],
+  'sig': '',
 });
 
 amber.signEvent(
-  npub: "<your_npub_here>",
-  event: eventJson,
+  currentUser: "<your_npub_here>",
+  eventJson: eventJson,
 ).then((value) {
   print("signed event: ${value['event']}");
 });
@@ -74,8 +79,8 @@ final amber = Amberflutter();
 
 amber.nip04Encrypt(
   plaintext: "Hello from Amber Flutter, Nip 04!",
-  npub: "<your_npub_here>",
-  pubkey: "<hex_pubkey_to_encrypt>",
+  currentUser: "<your_npub_here>",
+  pubKey: "<hex_pubkey_to_encrypt>",
 ).then((value) {
   print("ciphertext: ${value['signature']}")
 });
@@ -86,8 +91,8 @@ _Nip 44 Encrypt_
 ```
 amber.nip44Encrypt(
   plaintext: "Hello from Amber Flutter, Nip 44!",
-  npub: "<your_npub_here>",
-  pubkey: "<hex_pubkey_to_encrypt>",
+  currentUser: "<your_npub_here>",
+  pubKey: "<hex_pubkey_to_encrypt>",
 ).then((value) {
   print("ciphertext: ${value['signature']}")
 });
@@ -100,8 +105,8 @@ final amber = Amberflutter();
 
 amber.nip04Decrypt(
   ciphertext: "<message_encrypted_with_nip04_here>",
-  npub: "<your_npub_here>",
-  pubkey: "<hex_pubkey_to_decrypt>",
+  currentUser: "<your_npub_here>",
+  pubKey: "<hex_pubkey_to_decrypt>",
 ).then((value) {
   print("plaintext: ${value['signature']}")
 });
@@ -114,8 +119,8 @@ final amber = Amberflutter();
 
 amber.nip44Decrypt(
   ciphertext: "<message_encrypted_with_nip44_here>",
-  npub: "<your_npub_here>",
-  pubkey: "<hex_pubkey_to_decrypt>",
+  currentUser: "<your_npub_here>",
+  pubKey: "<hex_pubkey_to_decrypt>",
 ).then((value) {
   print("plaintext: ${value['signature']}")
 });
