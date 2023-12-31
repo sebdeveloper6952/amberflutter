@@ -38,6 +38,10 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
     _context = flutterPluginBinding.applicationContext
   }
 
+  fun isPackageInstalled(context: Context, target: String): Boolean {
+    return context.packageManager.getInstalledApplications(0).find { info -> info.packageName == target } != null
+  }
+
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == nostrsignerUri) {
       _result = result
@@ -88,6 +92,17 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
         intent,
         _intentRequestCode
       )
+    } else if (call.method == "isAppInstalled") {
+        var paramsMap: HashMap<*, *>? = null
+        if (call.arguments != null && call.arguments is HashMap<*, *>) {
+            paramsMap = call.arguments as HashMap<*, *>
+        }
+        if (paramsMap == null) {
+            return
+        }
+        var packageName: String? = paramsMap["packageName"] as? String ?: return
+        val isInstalled: Boolean = isPackageInstalled(_context, packageName!!)
+        result.success(isInstalled);
     } else {
       result.notImplemented()
     }
