@@ -1,23 +1,22 @@
 package com.sebdeveloper6952.amberflutter.amberflutter
 
-import com.sebdeveloper6952.amberflutter.amberflutter.models.*
-
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-
+import com.sebdeveloper6952.amberflutter.amberflutter.models.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
-import java.lang.Exception
 
 /** AmberflutterPlugin */
 class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -40,7 +39,7 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == nostrsignerUri) {
-      _result = result
+      _result = MethodResultWrapper(result)
 
       var paramsMap: HashMap<*, *>? = null
       if (call.arguments != null && call.arguments is HashMap<*, *>) {
@@ -59,16 +58,16 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       val uriData = paramsMap[intentExtraKeyUriData] as? String ?: ""
       val permissions = paramsMap[intentExtraKeyPermissions] as? String ?: ""
 
-      val data = getDataFromContentResolver(
-        requestType.uppercase(),
-        arrayOf(uriData, pubKey, currentUser),
-        _context.contentResolver,
-      )
-      if (!data.isNullOrEmpty()) {
-        Log.d("onMethodCall", "content resolver got data")
-        _result.success(data)
-        return
-      }
+     val data = getDataFromContentResolver(
+       requestType.uppercase(),
+       arrayOf(uriData, pubKey, currentUser),
+       _context.contentResolver,
+     )
+     if (!data.isNullOrEmpty()) {
+       Log.d("onMethodCall", "content resolver got data")
+       _result.success(data)
+       return
+     }
 
       val intent = Intent(
         Intent.ACTION_VIEW,
@@ -186,5 +185,31 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       return null
     }
     return null
+  }
+}
+
+
+private class MethodResultWrapper internal constructor(result: MethodChannel.Result) :
+  MethodChannel.Result {
+  private val methodResult: MethodChannel.Result
+  private val handler: Handler
+
+  init {
+    methodResult = result
+    handler = Handler(Looper.getMainLooper())
+  }
+
+  override fun success(result: Any?) {
+    handler.post { methodResult.success(result) }
+  }
+
+  override fun error(
+    errorCode: String, errorMessage: String?, errorDetails: Any?
+  ) {
+    handler.post { methodResult.error(errorCode, errorMessage, errorDetails) }
+  }
+
+  override fun notImplemented() {
+    handler.post { methodResult.notImplemented() }
   }
 }
