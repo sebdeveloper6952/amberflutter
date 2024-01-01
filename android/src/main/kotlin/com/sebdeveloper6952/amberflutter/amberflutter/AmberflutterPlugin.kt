@@ -82,7 +82,7 @@ class AmberflutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Plugi
       intent.putExtra(intentExtraKeyPubKey, pubKey)
       intent.putExtra(intentExtraKeyId, id)
       intent.putExtra(intentExtraKeyPermissions, permissions)
-      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+      // intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
       _activity?.startActivityForResult(
         intent,
