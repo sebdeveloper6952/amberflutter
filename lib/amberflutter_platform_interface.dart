@@ -23,6 +23,10 @@ abstract class AmberflutterPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  Future<bool> isAppInstalled() {
+    throw UnimplementedError('isAppInstalled() has not been implemented.');
+  }
+
   Future<Map<dynamic, dynamic>> getPublicKey({List<Permission>? permissions}) {
     throw UnimplementedError('getPublicKey() has not been implemented.');
   }
